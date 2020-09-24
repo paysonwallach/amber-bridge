@@ -1,0 +1,31 @@
+{
+  "name": "amber",
+  "version": "0.1.0",
+  "description": "Serializable browsing sessions",
+  "scripts": {
+    "build-meta": "node scripts/build.js",
+    "format": "find . -name '*.vala' -exec uncrustify -c uncrustify.cfg --replace {} \\;",
+    "prerelease": "node scripts/build.js",
+    "release": "standard-version"
+  },
+  "author": "Payson Wallach",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "husky": "^4.3.0",
+    "nunjucks": "^3.2.2",
+    "standard-version": "^9.0.0"
+},
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "npm run format"
+    }
+  },
+  "standard-version": {
+    "scripts": {
+      "precommit": "npm run prerelease"
+    }
+  }
+}
