@@ -2,19 +2,26 @@
   "name": "amber",
   "version": "0.1.0",
   "description": "Serializable browsing sessions",
+  "homepage": "https://github.com/paysonwallach/amber#readme",
+  "bugs": {
+    "url": "https://github.com/paysonwallach/amber/issues"
+  },
+  "license": "GPL-3.0",
+  "author": "Payson Wallach <payson@paysonwallach.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paysonwallach/amber"
+  },
   "scripts": {
-    "build-meta": "node scripts/build.js",
     "format": "find . -name '*.vala' -exec uncrustify -c uncrustify.cfg --replace {} \\;",
-    "prerelease": "node scripts/build.js",
+    "prerelease": "scrivano",
     "release": "standard-version"
   },
-  "author": "Payson Wallach",
-  "license": "GPL-3.0",
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "husky": "^4.3.0",
-    "nunjucks": "^3.2.2",
+    "scrivano": "^0.1.0",
     "standard-version": "^9.0.0"
 },
   "husky": {
