@@ -1,4 +1,4 @@
-# Created from https://www.toptal.com/developers/gitignore/api/linux,macos,meson,node
+# Created from https://www.toptal.com/developers/gitignore/api/linux,macos,meson,node,python
 
 ### Linux ###
 *~
@@ -103,6 +103,59 @@ jspm_packages/
 # Optional REPL history
 .node_repl_history
 
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# pyenv
+.python-version
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+
+# Rope project settings
+.ropeproject
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 ### Uncrustify ###
 *.uncrustify
