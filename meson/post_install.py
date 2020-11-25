@@ -1,26 +1,96 @@
 #!/usr/bin/env python3
 
+import fileinput
 import os
+import shutil
 import subprocess
+import sys
 
-prefix = os.environ.get('MESON_INSTALL_PREFIX', '/usr/local')
-datadir = os.path.join(prefix, 'share')
-schemadir = os.path.join(os.environ['MESON_INSTALL_PREFIX'], 'share', 'glib-2.0', 'schemas')
+EXECUTABLE_INSTALL_DIR = os.path.join(
+    os.environ.get("DESTDIR", ""), os.environ["MESON_INSTALL_PREFIX"], "bin"
+)
+EXECUTABLE_NAME = "com.paysonwallach.amber.bridge"
+MANIFEST_FILE_NAME = "com.paysonwallach.amber.bridge.json"
 
-# Packaging tools define DESTDIR and this isn't needed for them
-if 'DESTDIR' not in os.environ:
-    print('Updating icon cache...')
-    icon_cache_dir = os.path.join(datadir, 'icons', 'hicolor')
-    if not os.path.exists(icon_cache_dir):
-        os.makedirs(icon_cache_dir)
-    subprocess.call(['gtk-update-icon-cache', '-qtf', icon_cache_dir])
+is_root = subprocess.run(["whoami"], capture_output=True) == "root"
+kernel_name = subprocess.run(["uname", "-s"], capture_output=True)
 
-    print('Updating desktop database...')
-    desktop_database_dir = os.path.join(datadir, 'applications')
-    if not os.path.exists(desktop_database_dir):
-        os.makedirs(desktop_database_dir)
-    subprocess.call(['update-desktop-database', '-q', desktop_database_dir])
 
-    print('Compiling gsettings schemas...')
+def install_dir_for_target(target: str) -> str:
+    if kernel_name == "Darwin":
+        if is_root:
+            return {
+                "chrome": "/Library/Google/Chrome/NativeMessagingHosts",
+                "chromium": "/Library/Application Support/Chromium/NativeMessagingHosts",
+                "firefox": "/Library/Application Support/Mozilla/NativeMessagingHosts",
+                "vivaldi": "/Library/Application Support/Vivaldi/NativeMessagingHosts",
+            }.get(target, None)
+        else:
+            return {
+                "chrome": os.path.join(
+                    os.environ["HOME"],
+                    "Library/Application Support/Google/Chrome/NativeMessagingHosts",
+                ),
+                "chromium": os.path.join(
+                    os.environ["HOME"],
+                    "Library/Application Support/Chromium/NativeMessagingHosts",
+                ),
+                "firefox": os.path.join(
+                    os.environ["HOME"],
+                    "Library/Application Support/Mozilla/NativeMessagingHosts",
+                ),
+                "vivaldi": os.path.join(
+                    os.environ["HOME"],
+                    "Library/Application Support/Vivaldi/NativeMessagingHosts",
+                ),
+            }.get(target, None)
+    else:
+        if is_root:
+            return {
+                "chrome": "/etc/opt/chrome/native-messaging-hosts",
+                "chromium": "/etc/chromium/native-messaging-hosts",
+                "firefox": "/usr/lib/mozilla/native-messaging-hosts",
+                "vivaldi": "/etc/vivaldi/native-messaging-hosts",
+            }.get(target, None)
+        else:
+            return {
+                "chrome": os.path.join(
+                    os.environ["HOME"],
+                    ".config/google-chrome/NativeMessagingHosts",
+                ),
+                "chromium": os.path.join(
+                    os.environ["HOME"],
+                    ".config/chromium/NativeMessagingHosts",
+                ),
+                "firefox": os.path.join(
+                    os.environ["HOME"],
+                    ".mozilla/native-messaging-hosts",
+                ),
+                "vivaldi": os.path.join(
+                    os.environ["HOME"],
+                    ".config/vivaldi/NativeMessagingHosts",
+                ),
+            }.get(target, None)
 
-subprocess.call(['glib-compile-schemas', schemadir])
+
+target_dirs = map(install_dir_for_target, sys.argv[1:])
+
+for target_dir in target_dirs:
+    shutil.copyfile(
+        os.path.join(
+            os.environ["MESON_SOURCE_ROOT"], "data", MANIFEST_FILE_NAME
+        ),
+        os.path.join(target_dir, MANIFEST_FILE_NAME),
+    )
+
+    with fileinput.FileInput(
+        os.path.join(target_dir, MANIFEST_FILE_NAME), inplace=True
+    ) as file:
+        for line in file:
+            print(
+                line.replace(
+                    "@EXECUTABLE_PATH@",
+                    os.path.join(EXECUTABLE_INSTALL_DIR, EXECUTABLE_NAME),
+                ),
+                end="",
+            )
