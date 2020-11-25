@@ -18,4 +18,7 @@ posix_dep = vala.find_library('posix')
 subdir('host-connector')
 subdir('opener')
 
-meson.add_install_script('meson/post_install.py')
+meson.add_install_script(
+  'meson/post_install.py',
+  get_option('browsers')
+)

@@ -1,0 +1,7 @@
+{
+  "name": "com.paysonwallach.amber.bridge",
+  "description": "",
+  "path": "@EXECUTABLE_PATH@",
+  "type": "stdio",
+  "allowed_extensions": [ "amber@paysonwallach.com" ]
+}
