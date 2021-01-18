@@ -1,0 +1,46 @@
+<div align="center">
+  <h1>{{ meta.title }}</h1>
+  <p>{{ description }}</p>
+  <a href="{{ meta.releases.url }}/latest">
+    <img alt="Version {{ version }}" src="https://img.shields.io/badge/version-{{ version }}-red.svg?cacheSeconds=2592000&style=flat-square" />
+  </a>
+  <a href="{{ meta.license.url }}" target="\_blank">
+    <img alt="Licensed under the {{ meta.license.name }}" src="https://img.shields.io/github/license/{{ meta.repository.owner }}/{{ meta.repository.name }}?style=flat-square" />
+  <a href=https://buymeacoffee.com/paysonwallach>
+    <img src=https://img.shields.io/badge/donate-Buy%20me%20a%20coffe-yellow?style=flat-square>
+  </a>
+  <br>
+  <br>
+</div>
+
+## Background
+
+[Amber](https://github.com/paysonwallach/amber-web-extension#readme) is a browser extension that enables sessions to be saved as portable, human-readable, and editable files. [{{ meta.title }}]({{ repository.url }}) is the native component that saves sessions to the disk and communicates requests to open saved sessions to the browser.
+
+## Installation
+
+Clone this repository or download the [latest release]({{ meta.releases.url }}/latest).
+
+```shell
+git clone {{ repository.url }}
+```
+
+Configure the build directory at the root of the project. Set the `browsers` option accordingly so that the appropriate manifests will be generated and installed in their respective locations. For example, with Firefox:
+
+```shell
+meson --prefix=/usr -Dbrowsers=["firefox"] build
+```
+
+Install with `ninja`.
+
+```shell
+ninja -C build install
+```
+
+## Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change. By participating in this project, you agree to abide by the terms of the [Code of Conduct]({{ meta.codeOfConduct.url }}).
+
+## License
+
+[{{ meta.title }}]({{ repository.url }}) is licensed under the [{{ meta.license.name }}]({{ meta.license.url }}).

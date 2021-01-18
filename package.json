@@ -1,15 +1,15 @@
 {
-  "name": "amber",
+  "name": "amber-bridge",
   "description": "Serializable browsing sessions",
   "license": "GPL-3.0",
   "author": "Payson Wallach <payson@paysonwallach.com>",
-  "homepage": "https://github.com/paysonwallach/amber#readme",
+  "homepage": "https://github.com/paysonwallach/amber-bridge#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paysonwallach/amber"
+    "url": "https://github.com/paysonwallach/amber-bridge"
   },
   "bugs": {
-    "url": "https://github.com/paysonwallach/amber/issues"
+    "url": "https://github.com/paysonwallach/amber-bridge/issues"
   },
   "version": "0.1.0",
   "scripts": {
@@ -34,6 +34,23 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "npm run format"
+    }
+  },
+  "meta": {
+    "title": "Amber Bridge",
+    "repository": {
+      "owner": "paysonwallach",
+      "name": "amber-bridge"
+    },
+    "license": {
+      "name": "GNU General Public License v3.0",
+      "url": "https://github.com/paysonwallach/amber-bridge/blob/master/LICENSE"
+    },
+    "codeOfConduct": {
+      "url": "https://github.com/paysonwallach/amber-bridge/blob/master/CODE_OF_CONDUCT.md"
+    },
+    "releases": {
+      "url": "https://github.com/paysonwallach/amber-bridge/releases"
     }
   },
   "standard-version": {
