@@ -114,66 +114,64 @@ namespace Amber {
     }
 
     public void create_session (CreateSessionRequest request) {
-        var save_dialog = new Gtk.FileChooserDialog (
-            "Save session",
-            null,
-            Gtk.FileChooserAction.SAVE,
-            "_Cancel",
-            Gtk.ResponseType.CANCEL,
-            "_Save",
-            Gtk.ResponseType.ACCEPT);
+        string path;
+        CreateSessionResult session_result;
+        Nfd.FilterItem[] filter_list = { { "Browser Sessions", "ambr" } };
+        var result = Nfd.save_dialog (
+            out path, filter_list,
+            Environment.get_home_dir (), @"$(request.session_name)");
 
-        save_dialog.set_current_folder (Environment.get_home_dir ());
-        save_dialog.set_current_name (@"$(request.session_name).ambr");
-        save_dialog.response.connect ((response_id) => {
-            CreateSessionResult result;
-
-            switch (response_id) {
-            case Gtk.ResponseType.ACCEPT:
-                var file = save_dialog.get_file ();
-                var uri = file.get_uri ();
-                var success = false;
-
-                try {
-                    success = file.replace_contents (
-                        request.data.data, null,
-                        false, GLib.FileCreateFlags.NONE, null, null);
-                    result = new CreateSessionResult.with_success (
-                        request.id,
-                        Utils.get_session_name (uri),
-                        uri);
-                } catch (GLib.Error error) {
-                    result = new CreateSessionResult.with_error (
-                        request.id, error.code, error.message);
-                }
-                break;
-            case Gtk.ResponseType.CANCEL:
-                result = new CreateSessionResult.with_success (request.id);
-                break;
-            default:
-                assert_not_reached ();
-            }
-
-            save_dialog.hide ();
-            ExtensionProxy.get_default ().send_message.begin (
-                Json.gobject_to_data (result, null));
-        });
-        save_dialog.show ();
         ExtensionProxy.get_default ().send_message.begin (
             Json.gobject_to_data (new Event ("dialog-shown"), null));
+
+        switch (result) {
+        case ERROR:
+            session_result = new CreateSessionResult.with_error (
+                request.id, -1, Nfd.get_error ());
+            break;
+        case OKAY:
+            var file = File.new_for_path (path);
+            var uri = file.get_uri ();
+            var success = false;
+
+            try {
+                success = file.replace_contents (
+                    request.data.data, null,
+                    false, GLib.FileCreateFlags.NONE, null, null);
+                session_result = new CreateSessionResult.with_success (
+                    request.id,
+                    Utils.get_session_name (uri),
+                    uri);
+            } catch (GLib.Error error) {
+                session_result = new CreateSessionResult.with_error (
+                    request.id, error.code, error.message);
+            }
+
+            break;
+        case CANCEL:
+            session_result = new CreateSessionResult.with_success (request.id);
+            break;
+        default:
+            assert_not_reached ();
+        }
+
+        ExtensionProxy.get_default ().send_message.begin (
+            Json.gobject_to_data (session_result, null));
     }
 
     public static int main (string[] args) {
         GLib.Log.set_writer_func (log_writer_func);
         Intl.setlocale ();
 
-        Gtk.init (ref args);
+        Nfd.init ();
 
+        var loop = new MainLoop ();
         var sigterm_source = new Unix.SignalSource (Posix.Signal.TERM);
         var extension_proxy = ExtensionProxy.get_default ();
 
         sigterm_source.set_callback (() => {
-            Gtk.main_quit ();
+            loop.quit ();
+            Nfd.quit ();
 
             return Source.REMOVE;
         });
@@ -183,7 +181,7 @@ namespace Amber {
         extension_proxy.message_received.connect (route);
         extension_proxy.start_listening.begin ();
 
-        Gtk.main ();
+        loop.run ();
 
         return Posix.EXIT_SUCCESS;
     }

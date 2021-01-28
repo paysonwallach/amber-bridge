@@ -1,1 +1,2 @@
 option('browsers', type : 'array', choices : ['chrome', 'chromium', 'firefox', 'vivaldi'], value : [])
+option('gtk3',  type: 'feature', value: 'auto')
