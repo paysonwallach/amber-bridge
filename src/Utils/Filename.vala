@@ -22,4 +22,5 @@ namespace Amber.Utils {
 
         return basename.slice (0, basename.last_index_of (".", 0));
     }
+
 }

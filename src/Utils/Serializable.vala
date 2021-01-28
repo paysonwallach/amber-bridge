@@ -36,8 +36,7 @@ public abstract class Amber.Serializable : GLib.Object, Json.Serializable {
         return ((ObjectClass) get_type ().class_ref ()).find_property (name);
     }
 
-    public virtual Json.Node serialize_property (
-            string property_name, Value @value, ParamSpec pspec) {
+    public virtual Json.Node serialize_property (string property_name, Value @value, ParamSpec pspec) {
         if (@value.type ().is_a (typeof (Json.Object))) {
             var obj = @value as Json.Object;
             if (obj != null) {
@@ -99,8 +98,7 @@ public abstract class Amber.Serializable : GLib.Object, Json.Serializable {
             property_name, @value, pspec);
     }
 
-    public virtual bool deserialize_property (
-            string property_name, out Value @value, ParamSpec pspec, Json.Node property_node) {
+    public virtual bool deserialize_property (string property_name, out Value @value, ParamSpec pspec, Json.Node property_node) {
         return default_deserialize_property (
             property_name, out @value, pspec, property_node);
     }

@@ -7,19 +7,35 @@ project(
   version: '0.1.0'
 )
 
+cmake = import('cmake')
 vala = meson.get_compiler('vala')
 
-add_global_arguments(
+vapi_dir = join_paths(meson.current_source_dir(), 'vapi')
+
+add_project_arguments(
   ['-DG_LOG_DOMAIN="com.paysonwallach.amber.bridge"'],
   language:'c'
 )
+
+add_project_arguments(
+  ['--vapidir', vapi_dir],
+  language: 'vala'
+)
+
+nfd_opts = cmake.subproject_options()
+
+if get_option('buildtype') == 'release'
+  nfd_opts.add_cmake_defines({'CMAKE_BUILD_TYPE': 'Release'})
+endif
+
+nfd = cmake.subproject('nativefiledialog-extended', options: nfd_opts)
+nfd_dep = nfd.dependency('nfd')
 
 gee_dep = dependency('gee-0.8')
 glib_dep = dependency('glib-2.0')
 glib_json_dep = dependency('json-glib-1.0')
 gio_dep = dependency('gio-2.0')
 gio_unix_dep = dependency('gio-unix-2.0')
-gtk_dep = dependency('gtk+-3.0')
 posix_dep = vala.find_library('posix')
 
 bridge_source_files = [
@@ -30,18 +46,25 @@ bridge_source_files = [
   'src/Utils/Serializable.vala'
 ]
 
+dependencies = [
+  gee_dep,
+  glib_dep,
+  glib_json_dep,
+  gio_dep,
+  gio_unix_dep,
+  posix_dep,
+  nfd_dep,
+  vala.find_library('nfd', dirs: vapi_dir)
+]
+
+if get_option('gtk3').enabled()
+  dependencies += dependency('gtk+-3.0')
+endif
+
 executable(
   meson.project_name(),
   bridge_source_files,
-  dependencies: [
-    gee_dep,
-    glib_dep,
-    glib_json_dep,
-    gio_dep,
-    gio_unix_dep,
-    gtk_dep,
-    posix_dep
-  ],
+  dependencies: dependencies,
   install: true
 )
 
