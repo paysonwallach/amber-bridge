@@ -177,6 +177,20 @@ namespace Amber {
         });
         sigterm_source.attach ();
 
+#if _WIN32
+#else
+        var ppid = Posix.getppid ();
+        Timeout.add_seconds (60, () => {
+            if (Posix.kill (ppid, 0) != 0) {
+                Posix.kill (Posix.getpid (), Posix.Signal.TERM);
+
+                return Source.REMOVE;
+            }
+
+            return Source.CONTINUE;
+        });
+#endif
+
         HostConnectorBusServer.get_default ().message_received.connect (route);
         extension_proxy.message_received.connect (route);
         extension_proxy.start_listening.begin ();
