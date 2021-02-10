@@ -45,7 +45,7 @@ namespace Amber {
                     }
                 },
                 () => {},
-                () => { warning ("could not acquire name"); });
+                () => { error ("could not acquire bus name"); });
             /* *INDENT-ON* */
         }
 
