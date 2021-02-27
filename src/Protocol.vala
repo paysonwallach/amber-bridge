@@ -46,7 +46,7 @@ namespace Amber {
         public string? context { get; construct set; }
 
         public Message (Method method, string? context = null) {
-            this.api_version = "v1"; // Config.API_VERSION;
+            this.api_version = Config.API_VERSION;
             this.id = Uuid.string_random ();
             this.method = method.to_string ();
             this.context = context;

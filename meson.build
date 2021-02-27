@@ -38,6 +38,22 @@ gio_dep = dependency('gio-2.0')
 gio_unix_dep = dependency('gio-unix-2.0')
 posix_dep = vala.find_library('posix')
 
+conf = configuration_data()
+conf.set_quoted('APP_ID', meson.project_name())
+conf.set_quoted('API_VERSION', 'v1')
+
+config_h = configure_file(
+  output: 'config.h',
+  configuration: conf
+)
+
+config_inc_dir = include_directories('.')
+
+config_dep = declare_dependency(
+  dependencies: vala.find_library('config', dirs: vapi_dir),
+  sources: config_h
+)
+
 bridge_source_files = [
   'src/ExtensionProxy.vala',
   'src/Main.vala',
@@ -54,7 +70,8 @@ dependencies = [
   gio_unix_dep,
   posix_dep,
   nfd_dep,
-  vala.find_library('nfd', dirs: vapi_dir)
+  vala.find_library('nfd', dirs: vapi_dir),
+  config_dep
 ]
 
 if get_option('gtk3').enabled()
@@ -64,6 +81,7 @@ endif
 executable(
   meson.project_name(),
   bridge_source_files,
+  include_directories: config_inc_dir,
   dependencies: dependencies,
   install: true
 )
