@@ -34,7 +34,7 @@ namespace Amber {
         construct {
             /* *INDENT-OFF* */
             owner_id = Bus.own_name (
-                BusType.SESSION, "com.paysonwallach.amber.bridge",
+                BusType.SESSION, Config.APP_ID,
                 BusNameOwnerFlags.ALLOW_REPLACEMENT | BusNameOwnerFlags.REPLACE,
                 (connection) => {
                     try {
