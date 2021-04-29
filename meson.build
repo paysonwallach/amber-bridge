@@ -12,16 +12,6 @@ vala = meson.get_compiler('vala')
 
 vapi_dir = join_paths(meson.current_source_dir(), 'vapi')
 
-add_project_arguments(
-  ['-DG_LOG_DOMAIN="com.paysonwallach.amber.bridge"'],
-  language:'c'
-)
-
-add_project_arguments(
-  ['--vapidir', vapi_dir],
-  language: 'vala'
-)
-
 nfd_opts = cmake.subproject_options()
 
 if get_option('buildtype') == 'release'
@@ -53,6 +43,11 @@ config_inc_dir = include_directories('.')
 config_dep = declare_dependency(
   dependencies: vala.find_library('config', dirs: vapi_dir),
   sources: config_h
+)
+
+add_project_arguments(
+  ['-DG_LOG_DOMAIN="@0@"'.format(meson.project_name())],
+  language:'c'
 )
 
 bridge_source_files = [
