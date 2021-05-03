@@ -159,6 +159,11 @@ namespace Amber {
             Json.gobject_to_data (session_result, null));
     }
 
+    private void quit (MainLoop loop) {
+        loop.quit ();
+        Nfd.quit ();
+    }
+
     public static int main (string[] args) {
         GLib.Log.set_writer_func (log_writer_func);
         Intl.setlocale ();
@@ -170,30 +175,17 @@ namespace Amber {
         var extension_proxy = ExtensionProxy.get_default ();
 
         sigterm_source.set_callback (() => {
-            loop.quit ();
-            Nfd.quit ();
-
+            quit (loop);
             return Source.REMOVE;
         });
         sigterm_source.attach ();
 
-#if _WIN32
-#else
-        var ppid = Posix.getppid ();
-        Timeout.add_seconds (60, () => {
-            if (Posix.kill (ppid, 0) != 0) {
-                Posix.kill (Posix.getpid (), Posix.Signal.TERM);
-
-                return Source.REMOVE;
-            }
-
-            return Source.CONTINUE;
-        });
-#endif
-
         HostConnectorBusServer.get_default ().message_received.connect (route);
         extension_proxy.message_received.connect (route);
-        extension_proxy.start_listening.begin ();
+        extension_proxy.start_listening.begin ((obj, res) => {
+            extension_proxy.start_listening.end (res);
+            quit (loop);
+        });
 
         loop.run ();
 
