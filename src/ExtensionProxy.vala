@@ -16,6 +16,7 @@
  */
 
 private class Amber.ExtensionProxy : Object {
+    private SourceFunc callback;
     private Cancellable cancellable;
     private DataInputStream input_stream;
     private DataOutputStream output_stream;
@@ -42,9 +43,29 @@ private class Amber.ExtensionProxy : Object {
 
         var base_input_stream = new UnixInputStream (Posix.STDIN_FILENO, false);
         var base_output_stream = new UnixOutputStream (Posix.STDOUT_FILENO, false);
+
         input_stream = new DataInputStream (base_input_stream);
         output_stream = new DataOutputStream (base_output_stream);
+
         cancellable = new Cancellable ();
+    }
+
+    public async void start_listening () {
+        callback = start_listening.callback;
+
+        message_length_buffer = new uint8[4];
+        input_stream.read_async.begin (message_length_buffer,
+                                       Priority.DEFAULT, cancellable, message_length_read_cb);
+        yield;
+    }
+
+    public async void send_message (string message) {
+        try {
+            output_stream.write (encode_message_length (message.length));
+            output_stream.write (message.data);
+        } catch (IOError e) {
+            warning (e.message);
+        }
     }
 
     private size_t decode_message_length (uint8[] message_length_buffer) {
@@ -68,24 +89,24 @@ private class Amber.ExtensionProxy : Object {
 
     private void message_content_read_cb (Object? object, AsyncResult result) {
         try {
-            input_stream.read_async.end (result);
+            if (input_stream.read_async.end (result) == 0)
+                throw new IOError.CLOSED ("stream returned `EOF`");
 
             info (@"received message: $((string) message_content_buffer)");
             message_received ((string) message_content_buffer);
 
-            if (input_stream != null) {
-                message_length_buffer = new uint8[4];
-                input_stream.read_async.begin (message_length_buffer,
-                                               Priority.DEFAULT, cancellable, message_length_read_cb);
-            }
-        } catch (IOError err) {
-            warning (err.message);
+            message_length_buffer = new uint8[4];
+            input_stream.read_async.begin (message_length_buffer,
+                                           Priority.DEFAULT, cancellable, message_length_read_cb);
+        } catch (IOError e) {
+            handle_exception (e.message);
         }
     }
 
     private void message_length_read_cb (Object? object, AsyncResult result) {
         try {
-            input_stream.read_async.end (result);
+            if (input_stream.read_async.end (result) == 0)
+                throw new IOError.CLOSED ("stream returned `EOF`");
 
             message_length = decode_message_length (message_length_buffer);
 
@@ -94,32 +115,20 @@ private class Amber.ExtensionProxy : Object {
                 input_stream.read_async.begin (message_length_buffer,
                                                Priority.DEFAULT, cancellable, message_length_read_cb);
             } else {
-                message_content_buffer = new uint8[message_length];
-
                 info (@"reading message with length $message_length");
+
+                message_content_buffer = new uint8[message_length];
                 input_stream.read_async.begin (message_content_buffer,
                                                Priority.DEFAULT, cancellable, message_content_read_cb);
             }
-        } catch (IOError err) {
-            warning (err.message);
+        } catch (IOError e) {
+            handle_exception (e.message);
         }
     }
 
-    public async void start_listening () {
-        message_length_buffer = new uint8[4];
-
-        input_stream.read_async.begin (message_length_buffer,
-                                       Priority.DEFAULT, cancellable, message_length_read_cb);
-
-    }
-
-    public async void send_message (string message) {
-        try {
-            output_stream.write (encode_message_length (message.length));
-            output_stream.write (message.data);
-        } catch (IOError err) {
-            warning (err.message);
-        }
+    private void handle_exception (string error_message) {
+        warning (error_message);
+        callback ();
     }
 
 }
