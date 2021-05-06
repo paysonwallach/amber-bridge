@@ -80,7 +80,8 @@ executable(
   bridge_source_files,
   include_directories: config_inc_dir,
   dependencies: dependencies,
-  install: true
+  install: true,
+  install_dir: join_paths(get_option('prefix'), get_option('libexecdir'))
 )
 
 meson.add_install_script(
