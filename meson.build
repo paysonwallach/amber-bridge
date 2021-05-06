@@ -8,6 +8,7 @@ project(
 )
 
 cmake = import('cmake')
+
 vala = meson.get_compiler('vala')
 
 vapi_dir = join_paths(meson.current_source_dir(), 'vapi')
