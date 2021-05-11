@@ -54,7 +54,7 @@ namespace Amber {
                 Bus.unown_name (owner_id);
         }
 
-        public bool open (string[] urls) throws DBusError, IOError {
+        public bool open (string[] urls, bool auto_save = false) throws DBusError, IOError {
             foreach (var url in urls) {
                 string contents;
                 try {
@@ -62,7 +62,7 @@ namespace Amber {
                     if (FileUtils.get_contents (file.get_path (), out contents, null)) {
                         debug (@"serializing $contents...");
                         message_received (
-                            Json.gobject_to_data (new OpenSessionRequest (url, contents), null));
+                            Json.gobject_to_data (new OpenSessionRequest (url, contents, auto_save), null));
                     }
                 } catch (GLib.Error err) {
                     warning (err.message);
