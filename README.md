@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Amber Bridge</h1>
-  <p>Serializable browsing sessions</p>
+  <p>Bring the Unix philosophy to the browser.</p>
   <a href="https://github.com/paysonwallach/amber-bridge/releases/latest">
     <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-red.svg?cacheSeconds=2592000&style=flat-square" />
   </a>
@@ -15,7 +15,7 @@
 
 ## Background
 
-[Amber](https://github.com/paysonwallach/amber-web-extension#readme) is a browser extension that enables sessions to be saved as portable, human-readable, and editable files. [Amber Bridge](https://github.com/paysonwallach/amber-bridge) is the native component that saves sessions to the disk and communicates requests to open saved sessions to the browser.
+[Amber](https://github.com/paysonwallach/amber-web-extension#readme) is a browser extension that enables sessions to be saved as portable, human-readable, and editable files. [Amber Bridge](https://github.com/paysonwallach/amber-bridge) is the host application that saves and opens sessions to and from disk.
 
 ## Installation
 
