@@ -19,7 +19,8 @@ namespace Amber {
     public enum Method {
         EVENT,
         CREATE,
-        OPEN;
+        OPEN,
+        UPDATE;
 
         public string to_string () {
             switch (this) {
@@ -29,6 +30,8 @@ namespace Amber {
                     return "create";
                 case OPEN:
                     return "open";
+                case UPDATE:
+                    return "update";
                 default:
                     assert_not_reached();
             }
@@ -80,9 +83,10 @@ namespace Amber {
 
         public string data { get; construct set; }
 
-        public CreateSessionRequest (string data) {
+        public CreateSessionRequest (string session_name, string data) {
             base (Method.CREATE);
 
+            this.session_name = session_name;
             this.data = data;
         }
     }
@@ -93,7 +97,7 @@ namespace Amber {
 
             public string uri { get; construct set; }
 
-            public CreateSessionResultData ( string name, string uri) {
+            public CreateSessionResultData (string name, string uri) {
                 this.name = name;
                 this.uri = uri;
             }
@@ -136,7 +140,9 @@ namespace Amber {
         }
 
         public string name { get; construct set; }
+
         public string uri { get; construct set; }
+
         public OpenSessionRequestData data { get; construct set; }
 
         public OpenSessionRequest (string uri, string data, bool auto_save) {
@@ -175,6 +181,19 @@ namespace Amber {
             base (Method.OPEN, context);
 
             this.error = new Error (error_code, error_description);
+        }
+    }
+
+    public class UpdateSessionRequest : Message {
+        public string uri { get; construct set; }
+
+        public string data { get; construct set; }
+
+        public UpdateSessionRequest (string uri, string data) {
+            base (Method.UPDATE);
+
+            this.uri = uri;
+            this.data = data;
         }
     }
 

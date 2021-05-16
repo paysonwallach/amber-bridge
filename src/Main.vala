@@ -108,6 +108,20 @@ namespace Amber {
                 warning (err.message);
             }
             break;
+        case "update":
+            try {
+                var request = Json.gobject_from_data (
+                    typeof (UpdateSessionRequest),
+                    message) as UpdateSessionRequest;
+                var file = File.new_for_uri (request.uri);
+
+                file.replace_contents (
+                    request.data.data, null,
+                    false, GLib.FileCreateFlags.NONE, null, null);
+            } catch (GLib.Error e) {
+                warning (e.message);
+            }
+            break;
         default:
             assert_not_reached ();
         }
