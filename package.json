@@ -14,11 +14,11 @@
   },
   "version": "0.1.0",
   "scripts": {
+    "build:meta": "scrivano",
     "format": "run-p format:*",
     "format:js": "prettier --write .",
     "format:package.json": "prettier-package-json --write",
     "format:vala": "find . -name '*.vala' -exec uncrustify -c uncrustify.cfg --replace {} \\;",
-    "prerelease": "scrivano",
     "release": "standard-version"
   },
   "devDependencies": {
@@ -50,7 +50,7 @@
   },
   "standard-version": {
     "scripts": {
-      "precommit": "npm run prerelease"
+      "precommit": "npm run build:meta"
     }
   }
 }
