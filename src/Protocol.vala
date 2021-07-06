@@ -126,31 +126,18 @@ namespace Amber {
     }
 
     public class OpenSessionRequest : Message {
-        public class OpenSessionRequestData : Serializable {
-            [CCode (cname = "autoSave")]
-            public bool auto_save { get; construct set; }
-
-            [CCode (cname = "sessionData")]
-            public string session_data { get; construct set; }
-
-            public OpenSessionRequestData (string session_data, bool auto_save) {
-                this.auto_save = auto_save;
-                this.session_data = session_data;
-            }
-        }
-
         public string name { get; construct set; }
 
         public string uri { get; construct set; }
 
-        public OpenSessionRequestData data { get; construct set; }
+        public string data { get; construct set; }
 
-        public OpenSessionRequest (string uri, string data, bool auto_save) {
+        public OpenSessionRequest (string uri, string data) {
             base (Method.OPEN);
 
             this.name = Utils.get_session_name (uri);
             this.uri = uri;
-            this.data = new OpenSessionRequestData (data, auto_save);
+            this.data = data;
         }
     }
 
