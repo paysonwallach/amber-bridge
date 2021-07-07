@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/paysonwallach/amber-bridge/issues"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "build:meta": "scrivano",
     "format": "run-p format:*",
